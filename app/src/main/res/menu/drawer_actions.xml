@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_home"
+            android:checked="true"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/all" />
+
+        <item
+            android:id="@+id/menu_done"
+            android:icon="@mipmap/ic_done"
+            android:title="@string/have_done" />
+        <item
+            android:id="@+id/menu_event"
+            android:icon="@mipmap/ic_event"
+            android:title="@string/event" />
+        <item
+            android:id="@+id/menu_setting"
+            android:icon="@drawable/ic_settings_applications_black_24dp"
+            android:title="应用设置" />
+
+        <item
+            android:id="@+id/menu_about"
+            android:icon="@drawable/ic_info_black_24dp"
+            android:title="@string/about" />
+        <item
+            android:id="@+id/menu_help"
+            android:icon="@drawable/ic_help_black_24dp"
+            android:title="@string/help" />
+    </group>
+</menu>

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">小计划</string>
+    <string name="take_picture">拍照</string>
+    <string name="select_pic">选择图片</string>
+    <string name="pic_def">默认</string>
+    <string name="update_avart">编辑头像</string>
+    <string name="new_plan">新建计划</string>
+    <string name="have_done">已完成</string>
+    <string name="event">待办</string>
+    <string name="app_information">应用信息</string>
+    <string name="about">关于</string>
+    <string name="help">帮助</string>
+    <string name="my_blog">我的博客</string>
+    <string name="project_page">项目主页</string>
+    <string name="select_all">全选</string>
+    <string name="delete">删除</string>
+    <string name="all">所有</string>
+    <string name="empty_message">生活没有计划，你和咸鱼有什么区别......</string>
+    <string name="finish_message">还没有完成的计划，加油</string>
+</resources>
