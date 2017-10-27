@@ -15,6 +15,5 @@
     <string name="select_all">全选</string>
     <string name="delete">删除</string>
     <string name="all">所有</string>
-    <string name="empty_message">生活没有计划，你和咸鱼有什么区别......</string>
-    <string name="finish_message">还没有完成的计划，加油</string>
+    <string name="empty_message">棒棒的！所有计划都完成了。</string>
 </resources>

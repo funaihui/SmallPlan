@@ -21,9 +21,9 @@ public interface PlansContract {
     interface Presenter extends BasePresenter {
         List<Plan> loadAllPlan();
 
-        List<Plan> loadFinishPlan(int type);
+        List<Plan> loadFinishPlan();
 
-        List<Plan> loadUnFinishPlan(int type);
+        List<Plan> loadUnFinishPlan();
 
         void initPopupWindow(Context context,ImageView imageView,Plan plan);
 

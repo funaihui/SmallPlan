@@ -144,9 +144,6 @@ public class PlansActivity extends AppCompatActivity implements PlansContract.Vi
                     isList = !isList;
                     //设置RecyclerView的布局
                     setLayoutManager(isList);
-
-                    // SPUtils.setBoolean(PlansActivity.this, MyContent.ISLIST, isList);
-
                 }
                 return false;
             }
@@ -159,7 +156,6 @@ public class PlansActivity extends AppCompatActivity implements PlansContract.Vi
             mRecyclerView.setLayoutManager(new LinearLayoutManager(PlansActivity.this));
         } else {
             menuItem.setIcon(R.drawable.ic_list);
-            // mRecyclerView.setLayoutManager(new GridLayoutManager(PlansActivity.this, 2));
             mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         }
     }
@@ -196,20 +192,17 @@ public class PlansActivity extends AppCompatActivity implements PlansContract.Vi
                         switch (menuItem.getItemId()) {
                             case R.id.menu_home:
                                 floatingActionButton.setVisibility(View.VISIBLE);
-                               /* getDataFromDB(-1);
-                                adapter.notifyDataSetChanged();*/
+                                refreshAdapter();
                                 break;
                             case R.id.menu_done:
-                                //  menuItem.setChecked(true);
-
-                                // getDataFromDB(MyContent.FINISH);
+                                listPlan = mPresenter.loadFinishPlan();
                                 floatingActionButton.setVisibility(View.GONE);
-                                //  adapter.notifyDataSetChanged();
+                                setupRecyclerView();
                                 break;
                             case R.id.menu_event:
-                                // getDataFromDB(MyContent.NOT_FINISH);
+                                listPlan = mPresenter.loadUnFinishPlan();
                                 floatingActionButton.setVisibility(View.GONE);
-                                // adapter.notifyDataSetChanged();
+                                setupRecyclerView();
                                 break;
                             case R.id.menu_setting:
                                 // menuItem.setChecked(true);

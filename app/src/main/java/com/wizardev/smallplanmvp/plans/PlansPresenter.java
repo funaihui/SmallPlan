@@ -44,13 +44,13 @@ public class PlansPresenter implements PlansContract.Presenter {
     }
 
     @Override
-    public List<Plan> loadFinishPlan(int type) {
-        return null;
+    public List<Plan> loadFinishPlan() {
+        return mPlanDao.queryBuilder().where(PlanDao.Properties.Flag.eq(0)).build().list();
     }
 
     @Override
-    public List<Plan> loadUnFinishPlan(int type) {
-        return null;
+    public List<Plan> loadUnFinishPlan() {
+        return mPlanDao.queryBuilder().where(PlanDao.Properties.Flag.eq(1)).build().list();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class PlansPresenter implements PlansContract.Presenter {
                     case R.id.menu_have_done:
                         long idUpdate = plan.getId();
                         //0嗲表
-                        updatePlanStatus(idUpdate,plan.getSomething(),plan.getTime(),0);
+                        updatePlanStatus(idUpdate, plan.getSomething(), plan.getTime(), 0);
                         mPlansView.dismissPopupWindow(popupMenu);
                         mPlansView.refreshAdapter();
                         break;
