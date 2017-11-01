@@ -16,4 +16,6 @@
     <string name="delete">删除</string>
     <string name="all">所有</string>
     <string name="empty_message">棒棒的！所有计划都完成了。</string>
+    <string name="remind_me">提醒我</string>
+    <string name="remind_date_and_time">设置提醒时间为 %1$s, %2$s %3$s</string>
 </resources>
