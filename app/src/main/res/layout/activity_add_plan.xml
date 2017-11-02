@@ -63,13 +63,12 @@
         android:layout_height="wrap_content">
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_weight=".5"
         android:gravity="center"
         android:layout_marginTop="32dp"
-        android:layout_marginLeft="36dp"
-        android:layout_marginRight="36dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content">
 
         <ImageButton
             android:layout_weight=".4"
@@ -95,7 +94,7 @@
             android:layout_height="wrap_content" />
 
         <android.support.v7.widget.SwitchCompat
-            android:id="@+id/toDoHasDateSwitchCompat"
+            android:id="@+id/dateSwitchCompat"
             android:layout_gravity="center"
             android:padding="8dp"
             android:gravity="center"
@@ -106,26 +105,25 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/toDoEnterDateLinearLayout"
+        android:id="@+id/dateLinearLayout"
         android:animateLayoutChanges="true"
-        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_marginLeft="36dp"
-        android:layout_marginRight="36dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
+        android:visibility="invisible"
         android:orientation="vertical"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
 
             android:layout_width="match_parent"
             android:gravity="top"
-            android:layout_weight="1"
-            android:layout_height="0dp">
+            android:layout_height="wrap_content">
 
 
             <EditText
-                android:id="@+id/newTodoDateEditText"
+                android:id="@+id/newPlanDateEditText"
                 android:inputType="none"
                 android:gravity="center"
                 android:textIsSelectable="false"
@@ -143,7 +141,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <EditText
-                android:id="@+id/newTodoTimeEditText"
+                android:id="@+id/newPlanTimeEditText"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:gravity="center"
@@ -158,16 +156,14 @@
         </LinearLayout>
 
         <TextView
-            android:layout_weight="2"
-            android:id="@+id/newToDoDateTimeReminderTextView"
+            android:id="@+id/newPlanDateTimeReminderTextView"
             android:textSize="14sp"
             android:gravity="start"
             android:text="@string/remind_date_and_time"
             android:textColor="@color/secondary_text"
             android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
-
 </LinearLayout>
 </android.support.constraint.ConstraintLayout>

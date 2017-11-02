@@ -1,13 +1,17 @@
 package com.wizardev.smallplanmvp.addplan;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +29,16 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     TextView tvAddplanCurrenttime;
     @BindView(R.id.et_add_plan)
     EditText mAddPlan;
+    @BindView(R.id.dateSwitchCompat)
+    SwitchCompat mToDoDateSwitch;
+    @BindView(R.id.newPlanDateEditText)
+    EditText newPlanDateEditText;
+    @BindView(R.id.newPlanTimeEditText)
+    EditText newPlanTimeEditText;
+    @BindView(R.id.newPlanDateTimeReminderTextView)
+    TextView newPlanDateTimeReminderTextView;
+    @BindView(R.id.dateLinearLayout)
+    LinearLayout mDateLinearLayout;
     private String mCurrentTime;
     private static final String TAG = "AddPlanActivity";
     private AddPlanContract.Presenter mPresenter;
@@ -46,6 +60,27 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
             String content = intent.getStringExtra("something");
             showPlanContent(content);
         }*/
+
+        mToDoDateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                   // app.send(this, "Action", "Reminder Set");
+                }
+                else{
+                   // app.send(this, "Action", "Reminder Removed");
+
+                }
+
+                if (!isChecked) {
+                  //  mUserReminderDate = null;
+                }
+              //  mUserHasReminder = isChecked;
+             //   setDateAndTimeEditText();
+                setEnterDateLayoutVisibleWithAnimations(isChecked);
+              //  hideKeyboard(mToDoTextBodyEditText);
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -101,10 +136,61 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     @Override
     public void showPlanContent(long id, String content) {
         this.id = id;
-        Log.i(TAG, "showPlanContent: id "+id);
+        Log.i(TAG, "showPlanContent: id " + id);
         mAddPlan.setText(content);
         if (!TextUtils.isEmpty(content)) {
             mAddPlan.setSelection(content.length());
         }
+    }
+    public void setEnterDateLayoutVisibleWithAnimations(boolean checked){
+        if(checked){
+           // setReminderTextView();
+            mDateLinearLayout.animate().alpha(1.0f).setDuration(500).setListener(
+                    new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            mDateLinearLayout.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                        }
+                    }
+            );
+        }
+        else{
+            mDateLinearLayout.animate().alpha(0.0f).setDuration(500).setListener(
+                    new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mDateLinearLayout.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    }
+            );
+        }
+
     }
 }
