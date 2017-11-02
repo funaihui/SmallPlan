@@ -28,6 +28,7 @@ public class PlanDao extends AbstractDao<Plan, Long> {
         public final static Property Something = new Property(1, String.class, "something", false, "SOMETHING");
         public final static Property Time = new Property(2, String.class, "time", false, "TIME");
         public final static Property Flag = new Property(3, int.class, "flag", false, "FLAG");
+        public final static Property RemindDate = new Property(4, java.util.Date.class, "remindDate", false, "REMIND_DATE");
     }
 
 
@@ -46,7 +47,8 @@ public class PlanDao extends AbstractDao<Plan, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"SOMETHING\" TEXT NOT NULL ," + // 1: something
                 "\"TIME\" TEXT NOT NULL ," + // 2: time
-                "\"FLAG\" INTEGER NOT NULL );"); // 3: flag
+                "\"FLAG\" INTEGER NOT NULL ," + // 3: flag
+                "\"REMIND_DATE\" INTEGER);"); // 4: remindDate
     }
 
     /** Drops the underlying database table. */
@@ -66,6 +68,11 @@ public class PlanDao extends AbstractDao<Plan, Long> {
         stmt.bindString(2, entity.getSomething());
         stmt.bindString(3, entity.getTime());
         stmt.bindLong(4, entity.getFlag());
+ 
+        java.util.Date remindDate = entity.getRemindDate();
+        if (remindDate != null) {
+            stmt.bindLong(5, remindDate.getTime());
+        }
     }
 
     @Override
@@ -79,6 +86,11 @@ public class PlanDao extends AbstractDao<Plan, Long> {
         stmt.bindString(2, entity.getSomething());
         stmt.bindString(3, entity.getTime());
         stmt.bindLong(4, entity.getFlag());
+ 
+        java.util.Date remindDate = entity.getRemindDate();
+        if (remindDate != null) {
+            stmt.bindLong(5, remindDate.getTime());
+        }
     }
 
     @Override
@@ -92,7 +104,8 @@ public class PlanDao extends AbstractDao<Plan, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.getString(offset + 1), // something
             cursor.getString(offset + 2), // time
-            cursor.getInt(offset + 3) // flag
+            cursor.getInt(offset + 3), // flag
+            cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)) // remindDate
         );
         return entity;
     }
@@ -103,6 +116,7 @@ public class PlanDao extends AbstractDao<Plan, Long> {
         entity.setSomething(cursor.getString(offset + 1));
         entity.setTime(cursor.getString(offset + 2));
         entity.setFlag(cursor.getInt(offset + 3));
+        entity.setRemindDate(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
      }
     
     @Override

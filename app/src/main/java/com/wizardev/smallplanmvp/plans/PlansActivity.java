@@ -113,10 +113,10 @@ public class PlansActivity extends AppCompatActivity implements PlansContract.Vi
         mAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Plan plan = mAdapter.getItem(position);
                 Intent intent = new Intent(PlansActivity.this, AddPlanActivity.class);
-                intent.putExtra("something", plan.getSomething());
-                intent.putExtra("id", plan.getId());
+                intent.putExtra("planItem", mAdapter.getItem(position));
+              //  intent.putExtra("id", plan.getId());
+              //  intent.putExtra("remindDate", plan.getRemindDate());
                 startActivityForResult(intent, 1);
             }
         });
@@ -136,7 +136,6 @@ public class PlansActivity extends AppCompatActivity implements PlansContract.Vi
         });
         Menu menu = toolbar.getMenu();
         menuItem = menu.getItem(0);
-
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

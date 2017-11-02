@@ -2,6 +2,8 @@ package com.wizardev.smallplanmvp.addplan;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.SwitchCompat;
+import android.widget.CompoundButton;
 
 import com.wizardev.smallplanmvp.App;
 import com.wizardev.smallplanmvp.data.Plan;
@@ -39,6 +41,7 @@ public class AddPlanPresenter implements AddPlanContract.Presenter{
         Date date = new Date(System.currentTimeMillis());
         String rightNow = formatter.format(date);
         mView.showCurrentTime(rightNow);
+
     }
 
     @Override
@@ -62,9 +65,51 @@ public class AddPlanPresenter implements AddPlanContract.Presenter{
     @Override
     public void obtainData(Intent intent) {
         if (intent != null) {
-            long id = intent.getLongExtra("id", 0);
-            String content = intent.getStringExtra("something");
-            mView.showPlanContent(id,content);
+            Plan plan = (Plan) intent.getSerializableExtra("planItem");
+            if (plan != null) {
+                long id = plan.getId();
+                String content = plan.getSomething();
+                mView.showPlanContent(id,content);
+                Date remindDate = plan.getRemindDate();
+                if (remindDate != null) {
+                    String dateFormat = "d MMM, yyyy";
+                    mView.setDateEditText(formatDate(dateFormat, remindDate));
+                } else {
+                    mView.showDefaultDate();
+                }
+            }else {
+                mView.showDefaultDate();
+            }
         }
+    }
+
+
+    private String formatDate(String formatString, Date dateToFormat){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatString);
+        return simpleDateFormat.format(dateToFormat);
+    }
+
+    @Override
+    public void switchClickAction(SwitchCompat switchCompat) {
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    // app.send(this, "Action", "Reminder Set");
+                }
+                else{
+                    // app.send(this, "Action", "Reminder Removed");
+
+                }
+
+                if (!isChecked) {
+                    //  mUserReminderDate = null;
+                }
+                //  mUserHasReminder = isChecked;
+                //   setDateAndTimeEditText();
+                mView.setEnterDateLayoutVisibleWithAnimations(isChecked);
+                //  hideKeyboard(mToDoTextBodyEditText);
+            }
+        });
     }
 }

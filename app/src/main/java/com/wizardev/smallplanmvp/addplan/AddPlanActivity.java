@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,9 +32,9 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     @BindView(R.id.dateSwitchCompat)
     SwitchCompat mToDoDateSwitch;
     @BindView(R.id.newPlanDateEditText)
-    EditText newPlanDateEditText;
+    EditText mDateEditText;
     @BindView(R.id.newPlanTimeEditText)
-    EditText newPlanTimeEditText;
+    EditText mTimeEditText;
     @BindView(R.id.newPlanDateTimeReminderTextView)
     TextView newPlanDateTimeReminderTextView;
     @BindView(R.id.dateLinearLayout)
@@ -52,35 +52,9 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
         ButterKnife.bind(this);
         setPresenter(new AddPlanPresenter(getApplicationContext(), this));
         setupToolbar();
-        mPresenter.obtainCurrentTime();
-        mPresenter.obtainData(intent);
-        // get the note DAO
-        /*if (intent != null) {
-            int id = intent.getIntExtra("id", 0);
-            String content = intent.getStringExtra("something");
-            showPlanContent(content);
-        }*/
-
-        mToDoDateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                   // app.send(this, "Action", "Reminder Set");
-                }
-                else{
-                   // app.send(this, "Action", "Reminder Removed");
-
-                }
-
-                if (!isChecked) {
-                  //  mUserReminderDate = null;
-                }
-              //  mUserHasReminder = isChecked;
-             //   setDateAndTimeEditText();
-                setEnterDateLayoutVisibleWithAnimations(isChecked);
-              //  hideKeyboard(mToDoTextBodyEditText);
-            }
-        });
+        mPresenter.obtainCurrentTime();//设置新建计划的时间
+        mPresenter.obtainData(intent);//获取传递过来的数据
+        mPresenter.switchClickAction(mToDoDateSwitch);//开关按钮的点击事件
     }
 
     private void setupToolbar() {
@@ -142,9 +116,11 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
             mAddPlan.setSelection(content.length());
         }
     }
-    public void setEnterDateLayoutVisibleWithAnimations(boolean checked){
-        if(checked){
-           // setReminderTextView();
+
+    @Override
+    public void setEnterDateLayoutVisibleWithAnimations(boolean checked) {
+        if (checked) {
+            // setReminderTextView();
             mDateLinearLayout.animate().alpha(1.0f).setDuration(500).setListener(
                     new Animator.AnimatorListener() {
                         @Override
@@ -165,8 +141,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
                         }
                     }
             );
-        }
-        else{
+        } else {
             mDateLinearLayout.animate().alpha(0.0f).setDuration(500).setListener(
                     new Animator.AnimatorListener() {
                         @Override
@@ -191,6 +166,27 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
                     }
             );
         }
+    }
 
+    @Override
+    public void setDateEditText(String dateEditText) {
+        mDateEditText.setText(dateEditText);
+    }
+
+    @Override
+    public void showDefaultDate() {
+       mDateEditText.setText(getString(R.string.date_reminder_default));
+    }
+
+
+    public void setTimeEditText() {
+        String dateFormat;
+        if (DateFormat.is24HourFormat(this)) {
+            dateFormat = "k:mm";
+        } else {
+            dateFormat = "h:mm a";
+
+        }
+        //  mTimeEditText.setText(formatDate(dateFormat, mUserReminderDate));
     }
 }
