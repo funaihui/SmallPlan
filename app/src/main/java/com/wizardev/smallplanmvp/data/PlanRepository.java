@@ -47,6 +47,11 @@ public class PlanRepository implements PlanDataSource{
     }
 
     @Override
+    public void addPlan(Plan plan) {
+        mPlanDao.insert(plan);
+    }
+
+    @Override
     public void updatePlan(long id, String content, String time, int flag) {
         //更新时必须为每个字段设置值，否则字段会被重新设置为默认值
         Plan plan = new Plan();

@@ -52,6 +52,8 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     private AddPlanContract.Presenter mPresenter;
     private long id;
 
+    private boolean mIsSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,10 +82,10 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
                     } else {
                         if (id != 0) {
                             //说明此时为修改
-                            mPresenter.updatePlan(id, planContent, mCurrentTime, 1);
+                            mPresenter.updatePlan(planContent);
                         } else {
                             //1,代表未完成
-                            mPresenter.savePlan(planContent, mCurrentTime, 1);
+                            mPresenter.savePlan(planContent);
                         }
                         setResult(0);
                         finish();
@@ -242,9 +244,6 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, hour, minute, DateFormat.is24HourFormat(this));
-        /*if (theme.equals(MainActivity.DARKTHEME)) {
-            timePickerDialog.setThemeDark(true);
-        }*/
         timePickerDialog.show(getFragmentManager(), "TimeFragment");
     }
 

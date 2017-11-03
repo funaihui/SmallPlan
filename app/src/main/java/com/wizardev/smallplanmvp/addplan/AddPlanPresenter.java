@@ -30,6 +30,8 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
     private static final String TAG = "AddPlanPresenter";
     private Date mRemindDate;
     private PlanDataSource mPlanRepository = null;
+    private boolean mIsCheck;
+    private String mRightNow;
 
     public AddPlanPresenter(Context context, AddPlanContract.View view) {
         mView = view;
@@ -46,24 +48,42 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
     public void obtainCurrentTime() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
-        String rightNow = formatter.format(date);
-        mView.showCurrentTime(rightNow);
+        mRightNow = formatter.format(date);
+        mView.showCurrentTime(mRightNow);
     }
 
     @Override
-    public void savePlan(String content, String time, int flag) {
-        mPlanRepository.addPlan(content, time, flag);
+    public void savePlan(String content) {
+        Plan plan = new Plan();
+        plan.setFlag(1);
+        plan.setTime(mRightNow);
+        plan.setSomething(content);
+        // mPlanRepository.addPlan(content, mRightNow, 1);
+        if (mIsCheck) {
+            //说明设置计划提醒
+
+            plan.setRemindDate(mRemindDate);
+        }
+        mPlanRepository.addPlan(plan);
     }
 
     @Override
-    public void updatePlan(long id, String content, String time, int flag) {
-        mPlanRepository.updatePlan(id, content, time, flag);
+    public void updatePlan(String planContent) {
+        long id = mPlan.getId();
+        String time = mPlan.getTime();
+        int flag = mPlan.getFlag();
+        mPlanRepository.updatePlan(id, planContent, time, flag);
     }
 
     @Override
     public void obtainData(Intent intent) {
         if (intent != null) {
             mPlan = (Plan) intent.getSerializableExtra("planItem");
+            if (mPlan != null) {
+                long id = mPlan.getId();
+                String content = mPlan.getSomething();
+                mView.showPlanContent(id, content);
+            }
             setReminderTextView();
         }
     }
@@ -96,30 +116,32 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
 
     @Override
     public void switchClickAction(SwitchCompat switchCompat) {
+        if (mPlan != null) {
+
+            if (mPlan.getRemindDate() != null) {
+                switchCompat.setChecked(true);
+                mIsCheck = true;
+            } else {
+                switchCompat.setChecked(false);
+                mIsCheck = false;
+            }
+        }
+
+
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // app.send(this, "Action", "Reminder Set");
-                } else {
-                    // app.send(this, "Action", "Reminder Removed");
 
-                }
-
-                if (!isChecked) {
-                    //  mUserReminderDate = null;
-                }
-                //  mUserHasReminder = isChecked;
-                //   setDateAndTimeEditText();
-                mView.setEnterDateLayoutVisibleWithAnimations(isChecked);
-                //  hideKeyboard(mToDoTextBodyEditText);
+                mIsCheck = isChecked;
+                mView.setEnterDateLayoutVisibleWithAnimations(mIsCheck);
             }
         });
     }
 
     @Override
     public void setReminderTextView() {
-        if (mRemindDate != null) {
+
+        if (mRemindDate != null && mIsCheck) {
             mView.displayReminderTextView();
             if (mRemindDate.before(new Date())) {
                 mView.showErrorReminderText();
@@ -146,7 +168,7 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
     }
 
     //设置日期和时间的显示格式
-    private void setDateAndTime() {
+    private void setDateAndTimeShowFormat() {
         String dateFormat = "yyyy,MMM d ";
         String formatToUse;
         //判断是否是24小时显示
@@ -184,24 +206,19 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
     @Override
     public void setDateAndTimeEditText() {
         if (mPlan != null) {
-            long id = mPlan.getId();
-            String content = mPlan.getSomething();
-            mView.showPlanContent(id, content);
+
             mRemindDate = mPlan.getRemindDate();
-            if (mRemindDate != null) {
-                setDateAndTime();
-            } else {
-                mView.showDefaultDate();
-                mView.showTimeEditText(handleDefaultTime());
-            }
+        }
+        setDefaultDate();
+    }
+
+    private void setDefaultDate() {
+        if (mRemindDate != null) {
+            setDateAndTimeShowFormat();
         } else {
-            if (mRemindDate != null) {
-                setDateAndTime();
-            } else {
-                mView.showDefaultDate();
-                mView.showTimeEditText(handleDefaultTime());
-                mView.hideReminderTextView();
-            }
+            mView.showDefaultDate();
+            mView.showTimeEditText(handleDefaultTime());
+            //  mRemindDate = new Date();
         }
     }
 

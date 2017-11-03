@@ -21,10 +21,10 @@ public interface AddPlanContract {
         void obtainCurrentTime();
 
         //添加计划到本地数据库
-        void savePlan(String content, String time, int flag);
+        void savePlan(String content);
 
         //更新数据
-        void updatePlan(long id, String content, String time, int flag);
+        void updatePlan(String planContent);
 
         //获得Activity传递过来的数据
         void obtainData(Intent intent);
