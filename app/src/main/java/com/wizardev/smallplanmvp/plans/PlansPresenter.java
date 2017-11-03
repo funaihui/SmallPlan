@@ -6,11 +6,10 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
-import com.wizardev.smallplanmvp.App;
 import com.wizardev.smallplanmvp.R;
 import com.wizardev.smallplanmvp.data.Plan;
-import com.wizardev.smallplanmvp.data.dao.DaoSession;
-import com.wizardev.smallplanmvp.data.dao.PlanDao;
+import com.wizardev.smallplanmvp.data.PlanDataSource;
+import com.wizardev.smallplanmvp.data.PlanRepository;
 
 import java.util.List;
 
@@ -23,13 +22,12 @@ import java.util.List;
  */
 public class PlansPresenter implements PlansContract.Presenter {
     private PlansContract.View mPlansView;
-    private PlanDao mPlanDao;
+    private PlanDataSource mPlanRepository;
     private Context mContext;
 
     public PlansPresenter(Context context, PlansContract.View view) {
         mPlansView = view;
-        DaoSession daoSession = ((App) context).getDaoSession();
-        mPlanDao = daoSession.getPlanDao();
+        mPlanRepository = PlanRepository.singleInstance(context);
         mContext = context;
     }
 
@@ -40,17 +38,17 @@ public class PlansPresenter implements PlansContract.Presenter {
 
     @Override
     public List<Plan> loadAllPlan() {
-        return mPlanDao.loadAll();
+        return mPlanRepository.loadAllPlan();
     }
 
     @Override
     public List<Plan> loadFinishPlan() {
-        return mPlanDao.queryBuilder().where(PlanDao.Properties.Flag.eq(0)).build().list();
+        return mPlanRepository.loadFinishPlan();
     }
 
     @Override
     public List<Plan> loadUnFinishPlan() {
-        return mPlanDao.queryBuilder().where(PlanDao.Properties.Flag.eq(1)).build().list();
+        return mPlanRepository.loadUnFinishPlan();
     }
 
     @Override
@@ -84,17 +82,12 @@ public class PlansPresenter implements PlansContract.Presenter {
 
     @Override
     public void updatePlanStatus(long id, String content, String time, int flag) {
-        Plan plan = new Plan();
-        plan.setId(id);
-        plan.setFlag(flag);
-        plan.setSomething(content);
-        plan.setTime(time);
-        mPlanDao.update(plan);
+        mPlanRepository.updatePlan(id,content,time,flag);
     }
 
     @Override
     public void deletePlan(long id) {
-        mPlanDao.deleteByKey(id);
+        mPlanRepository.deletePlan(id);
     }
 
     @Override

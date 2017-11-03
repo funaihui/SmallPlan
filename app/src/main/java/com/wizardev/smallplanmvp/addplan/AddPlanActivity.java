@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,18 +14,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wizardev.smallplanmvp.BaseActivity;
 import com.wizardev.smallplanmvp.R;
+import com.wizardev.smallplanmvp.utils.ToastUtils;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class AddPlanActivity extends BaseActivity implements AddPlanContract.View {
+public class AddPlanActivity extends BaseActivity implements AddPlanContract.View, DatePickerDialog.OnDateSetListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_addplan_currenttime)
-    TextView tvAddplanCurrenttime;
+    TextView createPlanTime;
     @BindView(R.id.et_add_plan)
     EditText mAddPlan;
     @BindView(R.id.dateSwitchCompat)
@@ -36,7 +40,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     @BindView(R.id.newPlanTimeEditText)
     EditText mTimeEditText;
     @BindView(R.id.newPlanDateTimeReminderTextView)
-    TextView newPlanDateTimeReminderTextView;
+    TextView mReminderTextView;
     @BindView(R.id.dateLinearLayout)
     LinearLayout mDateLinearLayout;
     private String mCurrentTime;
@@ -66,16 +70,16 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.menu_commit_plan) {
-                    String plan = mAddPlan.getText().toString().trim();
-                    if (TextUtils.isEmpty(plan)) {
+                    String planContent = mAddPlan.getText().toString().trim();
+                    if (TextUtils.isEmpty(planContent)) {
                         Toast.makeText(AddPlanActivity.this, "啊哦！计划不能为空！", Toast.LENGTH_SHORT).show();
                     } else {
                         if (id != 0) {
                             //说明此时为修改
-                            mPresenter.updatePlan(id, plan, mCurrentTime, 1);
+                            mPresenter.updatePlan(id, planContent, mCurrentTime, 1);
                         } else {
                             //1,代表未完成
-                            mPresenter.addPlan(plan, mCurrentTime, 1);
+                            mPresenter.savePlan(planContent, mCurrentTime, 1);
                         }
                         setResult(0);
                         finish();
@@ -92,6 +96,16 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
         });
     }
 
+    @OnClick({R.id.newPlanDateEditText})
+    public void clickAction(View view) {
+        switch (view.getId()) {
+            case R.id.newPlanDateEditText:
+                //点击设置日期的TextView
+                mPresenter.setPickDate();
+                break;
+        }
+    }
+
     @Override
     public void setPresenter(AddPlanContract.Presenter presenter) {
         if (presenter != null) {
@@ -103,7 +117,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     public void showCurrentTime(String s) {
         if (s != null) {
             mCurrentTime = s;
-            tvAddplanCurrenttime.setText(s);
+            createPlanTime.setText(s);
         }
     }
 
@@ -120,7 +134,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     @Override
     public void setEnterDateLayoutVisibleWithAnimations(boolean checked) {
         if (checked) {
-            // setReminderTextView();
+           mPresenter.setReminderTextView();
             mDateLinearLayout.animate().alpha(1.0f).setDuration(500).setListener(
                     new Animator.AnimatorListener() {
                         @Override
@@ -169,8 +183,13 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     }
 
     @Override
-    public void setDateEditText(String dateEditText) {
+    public void showDateEditText(String dateEditText) {
         mDateEditText.setText(dateEditText);
+    }
+
+    @Override
+    public void showTimeEditText(String timeEditText) {
+        mTimeEditText.setText(timeEditText);
     }
 
     @Override
@@ -178,15 +197,35 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
        mDateEditText.setText(getString(R.string.date_reminder_default));
     }
 
+    @Override
+    public void hideReminderTextView() {
+        mReminderTextView.setVisibility(View.GONE);
+    }
 
-    public void setTimeEditText() {
-        String dateFormat;
-        if (DateFormat.is24HourFormat(this)) {
-            dateFormat = "k:mm";
-        } else {
-            dateFormat = "h:mm a";
+    @Override
+    public void setReminderTextView() {
+        mReminderTextView.setVisibility(View.VISIBLE);
+    }
 
-        }
-        //  mTimeEditText.setText(formatDate(dateFormat, mUserReminderDate));
+    @Override
+    public void showPickDate() {
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog datePick = DatePickerDialog.newInstance(
+                this,
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+        datePick.show(getFragmentManager(), "datePickDialog");
+    }
+
+    @Override
+    public void showDateMessage(String content) {
+        ToastUtils.MyToast(this,content);
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        mPresenter.setDate(year,monthOfYear,dayOfMonth);
     }
 }
