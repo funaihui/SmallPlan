@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.SwitchCompat;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.widget.CompoundButton;
 
+import com.wizardev.smallplanmvp.R;
 import com.wizardev.smallplanmvp.data.Plan;
 import com.wizardev.smallplanmvp.data.PlanDataSource;
 import com.wizardev.smallplanmvp.data.PlanRepository;
@@ -29,7 +29,7 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
     private Plan mPlan;
     private static final String TAG = "AddPlanPresenter";
     private Date mRemindDate;
-    private  PlanDataSource mPlanRepository = null;
+    private PlanDataSource mPlanRepository = null;
 
     public AddPlanPresenter(Context context, AddPlanContract.View view) {
         mView = view;
@@ -52,12 +52,12 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
 
     @Override
     public void savePlan(String content, String time, int flag) {
-       mPlanRepository.addPlan(content,time,flag);
+        mPlanRepository.addPlan(content, time, flag);
     }
 
     @Override
     public void updatePlan(long id, String content, String time, int flag) {
-        mPlanRepository.updatePlan(id,content,time,flag);
+        mPlanRepository.updatePlan(id, content, time, flag);
     }
 
     @Override
@@ -65,50 +65,24 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         if (intent != null) {
             mPlan = (Plan) intent.getSerializableExtra("planItem");
             setReminderTextView();
-            /*if (plan != null) {
-                long id = plan.getId();
-                String content = plan.getSomething();
-                mView.showPlanContent(id, content);
-                Date remindDate = plan.getRemindDate();
-                if (remindDate != null) {
-                    String dateFormat = "d MMM, yyyy";
-                    String formatToUse;
-                    //判断是否是24小时显示
-                    if (DateFormat.is24HourFormat(mContext)) {
-                        formatToUse = "k:mm";
-                    } else {
-                        formatToUse = "h:mm a";
-                    }
-                    mView.setDateEditText(formatDate(dateFormat, remindDate));//设置显示的日期
-                    mView.showTimeEditText(formatDate(formatToUse,remindDate));//设置显示的时间
-                } else {
-                 //   handleDefaultTime();
-                    mView.showDefaultDate();
-                    mView.showTimeEditText(handleDefaultTime());
-                }
-            } else {
-                mView.showDefaultDate();
-                mView.showTimeEditText(handleDefaultTime());
-            }*/
         }
     }
 
+    //处理默认显示时间的格式
     private String handleDefaultTime() {
         boolean time24 = DateFormat.is24HourFormat(mContext);
         Calendar cal = Calendar.getInstance();
-        if(time24){
-            cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY)+1);
-        }
-        else{
-            cal.set(Calendar.HOUR, cal.get(Calendar.HOUR)+1);
+        if (time24) {
+            cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) + 1);
+        } else {
+            cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 1);
         }
         cal.set(Calendar.MINUTE, 0);
         mRemindDate = cal.getTime();
         String timeString;
-        if(time24){
+        if (time24) {
             timeString = formatDate("k:mm", mRemindDate);
-        }
-        else{
+        } else {
             timeString = formatDate("h:mm a", mRemindDate);
         }
         return timeString;
@@ -145,34 +119,44 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
 
     @Override
     public void setReminderTextView() {
-
-        if (mPlan != null) {
-            long id = mPlan.getId();
-            String content = mPlan.getSomething();
-            mView.showPlanContent(id, content);
-            mRemindDate = mPlan.getRemindDate();
-            if (mRemindDate != null) {
-                String dateFormat = "d MMM, yyyy";
-                String formatToUse;
-                //判断是否是24小时显示
-                if (DateFormat.is24HourFormat(mContext)) {
-                    formatToUse = "k:mm";
-                } else {
-                    formatToUse = "h:mm a";
-                }
-                mView.showDateEditText(formatDate(dateFormat, mRemindDate));//设置显示的日期
-                mView.showTimeEditText(formatDate(formatToUse, mRemindDate));//设置显示的时间
-            } else {
-                //   handleDefaultTime();
-                mView.showDefaultDate();
-                mView.showTimeEditText(handleDefaultTime());
+        if (mRemindDate != null) {
+            mView.displayReminderTextView();
+            if (mRemindDate.before(new Date())) {
+                mView.showErrorReminderText();
+                return;
             }
+            Date date = mRemindDate;
+            String dateString = formatDate("yyyy,MMM d ", date);
+            String timeString;
+            String amPmString = "";
+
+            if (DateFormat.is24HourFormat(mContext)) {
+                timeString = formatDate("k:mm", date);
+            } else {
+                timeString = formatDate("h:mm", date);
+                amPmString = formatDate("a", date);
+            }
+            String finalString = String.format(mContext.getResources().getString(R.string.remind_date_and_time), dateString, timeString, amPmString);
+
+            mView.setReminderTextView(finalString);
         } else {
-            mView.showDefaultDate();
-            mView.showTimeEditText(handleDefaultTime());
             mView.hideReminderTextView();
-            Log.i(TAG, "mPlan: "+mPlan);
+
         }
+    }
+
+    //设置日期和时间的显示格式
+    private void setDateAndTime() {
+        String dateFormat = "yyyy,MMM d ";
+        String formatToUse;
+        //判断是否是24小时显示
+        if (DateFormat.is24HourFormat(mContext)) {
+            formatToUse = "k:mm";
+        } else {
+            formatToUse = "h:mm a";
+        }
+        mView.showDateEditText(formatDate(dateFormat, mRemindDate));//设置显示的日期
+        mView.showTimeEditText(formatDate(formatToUse, mRemindDate));//设置显示的时间
     }
 
     @Override
@@ -181,35 +165,91 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
     }
 
     @Override
+    public void setTimeDate() {
+        Date date;
+        //hideKeyboard(mToDoTextBodyEditText);
+        if (mPlan != null) {
+            if (mPlan.getRemindDate() != null) {
+                date = mPlan.getRemindDate();
+            } else {
+                date = new Date();
+            }
+        } else {
+            date = new Date();
+        }
+
+        mView.showPickTime(date);
+    }
+
+    @Override
+    public void setDateAndTimeEditText() {
+        if (mPlan != null) {
+            long id = mPlan.getId();
+            String content = mPlan.getSomething();
+            mView.showPlanContent(id, content);
+            mRemindDate = mPlan.getRemindDate();
+            if (mRemindDate != null) {
+                setDateAndTime();
+            } else {
+                mView.showDefaultDate();
+                mView.showTimeEditText(handleDefaultTime());
+            }
+        } else {
+            if (mRemindDate != null) {
+                setDateAndTime();
+            } else {
+                mView.showDefaultDate();
+                mView.showTimeEditText(handleDefaultTime());
+                mView.hideReminderTextView();
+            }
+        }
+    }
+
+    @Override
     public void setDate(int year, int month, int day) {
         Calendar calendar = Calendar.getInstance();
         int hour, minute;
-
         Calendar reminderCalendar = Calendar.getInstance();
         reminderCalendar.set(year, month, day);
 
-        if(reminderCalendar.before(calendar)){
+        if (reminderCalendar.before(calendar)) {
             mView.showDateMessage("日期设置不可用！");
             return;
         }
 
-        if(mRemindDate!=null){
+        if (mRemindDate != null) {
             calendar.setTime(mRemindDate);
         }
 
-        if(DateFormat.is24HourFormat(mContext)){
+        if (DateFormat.is24HourFormat(mContext)) {
             hour = calendar.get(Calendar.HOUR_OF_DAY);
-        } else{
+        } else {
             hour = calendar.get(Calendar.HOUR);
         }
         minute = calendar.get(Calendar.MINUTE);
 
         calendar.set(year, month, day, hour, minute);
         mRemindDate = calendar.getTime();
-     //   setReminderTextView();
-//        setDateAndTimeEditText();
-        String dateFormat = "yyyy,MMM d ";
-        mView.showDateEditText(formatDate(dateFormat, mRemindDate));//设置显示的日期
-      //  setDateEditText();
+        setReminderTextView();
+        setDateAndTimeEditText();
+        //  setDateEditText();
+    }
+
+    @Override
+    public void setTime(int hour, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        if (mRemindDate != null) {
+            calendar.setTime(mRemindDate);
+        }
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(year, month, day, hour, minute, 0);
+        mRemindDate = calendar.getTime();
+
+        setReminderTextView();
+        setDateAndTimeEditText();
+        //     setTimeEditText();
     }
 }

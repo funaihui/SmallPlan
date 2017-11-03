@@ -2,10 +2,12 @@ package com.wizardev.smallplanmvp.addplan;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,17 +17,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.wizardev.smallplanmvp.BaseActivity;
 import com.wizardev.smallplanmvp.R;
 import com.wizardev.smallplanmvp.utils.ToastUtils;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AddPlanActivity extends BaseActivity implements AddPlanContract.View, DatePickerDialog.OnDateSetListener {
+public class AddPlanActivity extends BaseActivity implements AddPlanContract.View, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -96,12 +100,16 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
         });
     }
 
-    @OnClick({R.id.newPlanDateEditText})
+    @OnClick({R.id.newPlanDateEditText, R.id.newPlanTimeEditText})
     public void clickAction(View view) {
         switch (view.getId()) {
             case R.id.newPlanDateEditText:
-                //点击设置日期的TextView
+                //点击设置日期的EditText
                 mPresenter.setPickDate();
+                break;
+            case R.id.newPlanTimeEditText:
+                //点击设置时间的EditText
+                mPresenter.setTimeDate();
                 break;
         }
     }
@@ -134,7 +142,8 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     @Override
     public void setEnterDateLayoutVisibleWithAnimations(boolean checked) {
         if (checked) {
-           mPresenter.setReminderTextView();
+            mPresenter.setDateAndTimeEditText();
+            mPresenter.setReminderTextView();
             mDateLinearLayout.animate().alpha(1.0f).setDuration(500).setListener(
                     new Animator.AnimatorListener() {
                         @Override
@@ -194,7 +203,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
 
     @Override
     public void showDefaultDate() {
-       mDateEditText.setText(getString(R.string.date_reminder_default));
+        mDateEditText.setText(getString(R.string.date_reminder_default));
     }
 
     @Override
@@ -203,8 +212,14 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     }
 
     @Override
-    public void setReminderTextView() {
+    public void displayReminderTextView() {
         mReminderTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setReminderTextView(String finalString) {
+        mReminderTextView.setTextColor(getResources().getColor(R.color.secondary_text));
+        mReminderTextView.setText(finalString);
     }
 
     @Override
@@ -220,12 +235,37 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     }
 
     @Override
+    public void showPickTime(Date date) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, hour, minute, DateFormat.is24HourFormat(this));
+        /*if (theme.equals(MainActivity.DARKTHEME)) {
+            timePickerDialog.setThemeDark(true);
+        }*/
+        timePickerDialog.show(getFragmentManager(), "TimeFragment");
+    }
+
+    @Override
     public void showDateMessage(String content) {
-        ToastUtils.MyToast(this,content);
+        ToastUtils.MyToast(this, content);
+    }
+
+    @Override
+    public void showErrorReminderText() {
+        mReminderTextView.setText(getString(R.string.date_error_check_again));
+        mReminderTextView.setTextColor(Color.RED);
     }
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        mPresenter.setDate(year,monthOfYear,dayOfMonth);
+        mPresenter.setDate(year, monthOfYear, dayOfMonth);
+    }
+
+    @Override
+    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+        mPresenter.setTime(hourOfDay, minute);
     }
 }

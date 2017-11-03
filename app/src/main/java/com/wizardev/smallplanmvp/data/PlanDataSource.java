@@ -15,7 +15,7 @@ public interface PlanDataSource {
 
     void updatePlan(long id, String content, String time, int flag);//更新现有的计划
 
-    void deletePlan(long id);
+    void deletePlan(long id);//删除计划
 
     List<Plan> loadAllPlan();//载入所有的计划
 

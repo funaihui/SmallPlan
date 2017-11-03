@@ -12,7 +12,7 @@ import java.util.List;
  * anthor : wizardev
  * email : wizarddev@163.com
  * time : 17-11-3
- * desc :
+ * desc : 操作数据的增删改查
  * version : 1.0
  */
 
