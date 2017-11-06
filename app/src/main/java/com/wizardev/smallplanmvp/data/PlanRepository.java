@@ -63,6 +63,11 @@ public class PlanRepository implements PlanDataSource{
     }
 
     @Override
+    public void updatePlan(Plan plan) {
+        mPlanDao.update(plan);
+    }
+
+    @Override
     public void deletePlan(long id) {
         mPlanDao.deleteByKey(id);
     }

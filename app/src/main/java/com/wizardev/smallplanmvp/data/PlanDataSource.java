@@ -15,6 +15,7 @@ public interface PlanDataSource {
     void addPlan(Plan plan);//添加计划到数据库
 
     void updatePlan(long id, String content, String time, int flag);//更新现有的计划
+    void updatePlan(Plan plan);//更新现有的计划
 
     void deletePlan(long id);//删除计划
 

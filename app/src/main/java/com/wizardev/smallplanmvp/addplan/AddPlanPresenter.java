@@ -61,8 +61,9 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         // mPlanRepository.addPlan(content, mRightNow, 1);
         if (mIsCheck) {
             //说明设置计划提醒
-
-            plan.setRemindDate(mRemindDate);
+            Date date = mRemindDate;
+            // String dateString = formatDate("yyyy-MM-dd HH:mm:ss", date);
+            plan.setRemindDate(date);
         }
         mPlanRepository.addPlan(plan);
     }
@@ -72,7 +73,15 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         long id = mPlan.getId();
         String time = mPlan.getTime();
         int flag = mPlan.getFlag();
-        mPlanRepository.updatePlan(id, planContent, time, flag);
+        if (mIsCheck) {
+            //说明设置计划提醒
+            Date date = mRemindDate;
+            // String dateString = formatDate("yyyy-MM-dd HH:mm:ss", date);
+            mPlan.setRemindDate(date);
+            mPlanRepository.updatePlan(mPlan);
+        } else {
+            mPlanRepository.updatePlan(id, planContent, time, flag);
+        }
     }
 
     @Override
@@ -116,8 +125,8 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
 
     @Override
     public void switchClickAction(SwitchCompat switchCompat) {
+        //判断是否已经设置提醒时间，如果已经设置提醒时间则打开设置时间的布局并将设置的时间显示出来。
         if (mPlan != null) {
-
             if (mPlan.getRemindDate() != null) {
                 switchCompat.setChecked(true);
                 mIsCheck = true;
@@ -125,9 +134,8 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
                 switchCompat.setChecked(false);
                 mIsCheck = false;
             }
+            mView.setEnterDateLayoutVisibleWithAnimations(mIsCheck);
         }
-
-
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -140,7 +148,6 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
 
     @Override
     public void setReminderTextView() {
-
         if (mRemindDate != null && mIsCheck) {
             mView.displayReminderTextView();
             if (mRemindDate.before(new Date())) {
@@ -188,7 +195,7 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
 
     @Override
     public void setTimeDate() {
-        Date date;
+        Date date = null;
         //hideKeyboard(mToDoTextBodyEditText);
         if (mPlan != null) {
             if (mPlan.getRemindDate() != null) {
@@ -199,14 +206,12 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         } else {
             date = new Date();
         }
-
         mView.showPickTime(date);
     }
 
     @Override
     public void setDateAndTimeEditText() {
         if (mPlan != null) {
-
             mRemindDate = mPlan.getRemindDate();
         }
         setDefaultDate();
@@ -218,7 +223,6 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         } else {
             mView.showDefaultDate();
             mView.showTimeEditText(handleDefaultTime());
-            //  mRemindDate = new Date();
         }
     }
 
@@ -248,9 +252,17 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         calendar.set(year, month, day, hour, minute);
         mRemindDate = calendar.getTime();
         setReminderTextView();
-        setDateAndTimeEditText();
-        //  setDateEditText();
+        //  setDateAndTimeEditText();
+
+        //  setDateAndTimeShowFormat();
+        setDateEditText();
     }
+
+    private void setDateEditText() {
+        String dateString = formatDate("yyyy,MMM d ", mRemindDate);
+        mView.showDateEditText(dateString);
+    }
+
 
     @Override
     public void setTime(int hour, int minute) {
@@ -266,7 +278,21 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         mRemindDate = calendar.getTime();
 
         setReminderTextView();
-        setDateAndTimeEditText();
-        //     setTimeEditText();
+        //   setDateAndTimeEditText();
+        //   setDateAndTimeEditText();
+
+        setTimeEditText();
+    }
+
+    private void setTimeEditText() {
+        String formatToUse;
+        //判断是否是24小时显示
+        if (DateFormat.is24HourFormat(mContext)) {
+            formatToUse = "k:mm";
+        } else {
+            formatToUse = "h:mm a";
+        }
+        String dateString = formatDate(formatToUse, mRemindDate);
+        mView.showTimeEditText(dateString);
     }
 }

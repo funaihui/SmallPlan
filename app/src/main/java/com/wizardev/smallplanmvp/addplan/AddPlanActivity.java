@@ -8,7 +8,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -52,7 +51,6 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     private AddPlanContract.Presenter mPresenter;
     private long id;
 
-    private boolean mIsSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +132,6 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     @Override
     public void showPlanContent(long id, String content) {
         this.id = id;
-        Log.i(TAG, "showPlanContent: id " + id);
         mAddPlan.setText(content);
         if (!TextUtils.isEmpty(content)) {
             mAddPlan.setSelection(content.length());
