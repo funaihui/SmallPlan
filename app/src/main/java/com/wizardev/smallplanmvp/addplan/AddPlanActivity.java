@@ -19,6 +19,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.wizardev.smallplanmvp.BaseActivity;
 import com.wizardev.smallplanmvp.R;
+import com.wizardev.smallplanmvp.alarm.AlarmReceiver;
 import com.wizardev.smallplanmvp.utils.ToastUtils;
 
 import java.util.Calendar;
@@ -50,7 +51,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     private static final String TAG = "AddPlanActivity";
     private AddPlanContract.Presenter mPresenter;
     private long id;
-
+    private AlarmReceiver mAlarmReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +64,24 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
         mPresenter.obtainCurrentTime();//设置新建计划的时间
         mPresenter.obtainData(intent);//获取传递过来的数据
         mPresenter.switchClickAction(mToDoDateSwitch);//开关按钮的点击事件
-    }
 
+    }
     private void setupToolbar() {
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         toolbar.inflateMenu(R.menu.commit_new_plan);
         toolbar.setNavigationIcon(R.drawable.ic_back);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            /**
+             * @param item
+             * @return
+             * 点击提交要完成的动作：
+             * 1、新增或者刷新计划
+             * 2、设置的提醒时间开始计时
+             */
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+
                 if (item.getItemId() == R.id.menu_commit_plan) {
                     String planContent = mAddPlan.getText().toString().trim();
                     if (TextUtils.isEmpty(planContent)) {
@@ -85,6 +94,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
                             //1,代表未完成
                             mPresenter.savePlan(planContent);
                         }
+                        mPresenter.commitAction();
                         setResult(0);
                         finish();
                     }
@@ -255,6 +265,7 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
         mReminderTextView.setTextColor(Color.RED);
     }
 
+
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         mPresenter.setDate(year, monthOfYear, dayOfMonth);
@@ -264,4 +275,6 @@ public class AddPlanActivity extends BaseActivity implements AddPlanContract.Vie
     public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
         mPresenter.setTime(hourOfDay, minute);
     }
+
+
 }

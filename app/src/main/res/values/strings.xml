@@ -3,7 +3,7 @@
     <string name="take_picture">拍照</string>
     <string name="select_pic">选择图片</string>
     <string name="pic_def">默认</string>
-    <string name="update_avart">编辑头像</string>
+    <string name="update_avatar">编辑头像</string>
     <string name="new_plan">新建计划</string>
     <string name="have_done">已完成</string>
     <string name="event">待办</string>
@@ -19,5 +19,5 @@
     <string name="remind_me">提醒我</string>
     <string name="remind_date_and_time">设置提醒时间为 %1$s, %2$s %3$s</string>
     <string name="date_reminder_default">今天</string>
-    <string name="date_error_check_again">该提醒时间已设置</string>
+    <string name="date_error_check_again">该提醒时间已过期！</string>
 </resources>

@@ -1,11 +1,14 @@
 package com.wizardev.smallplanmvp.addplan;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.SwitchCompat;
 import android.text.format.DateFormat;
 import android.widget.CompoundButton;
 
+import com.wizardev.smallplanmvp.GlobalValues;
 import com.wizardev.smallplanmvp.R;
 import com.wizardev.smallplanmvp.data.Plan;
 import com.wizardev.smallplanmvp.data.PlanDataSource;
@@ -282,6 +285,29 @@ public class AddPlanPresenter implements AddPlanContract.Presenter {
         //   setDateAndTimeEditText();
 
         setTimeEditText();
+    }
+
+    @Override
+    public void commitAction() {
+        //如果设置了提醒，则开始计时
+        if (mIsCheck) {
+            Date remindDate;
+            //开始计时
+            if (mPlan != null) {
+                remindDate = mPlan.getRemindDate();
+            } else {
+                remindDate = mRemindDate;
+            }
+            AlarmManager alarm = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+            Intent myIntent = new Intent();
+
+            //Intent设置要启动的组件，这里启动广播
+            myIntent.setAction(GlobalValues.TIMER_ACTION);
+            //PendingIntent对象设置动作,启动的是Activity还是Service,或广播!
+            PendingIntent sender = PendingIntent.getBroadcast(mContext, 0, myIntent, 0);
+            //注册闹钟
+            alarm.set(AlarmManager.RTC_WAKEUP, remindDate.getTime(), sender);
+        }
     }
 
     private void setTimeEditText() {

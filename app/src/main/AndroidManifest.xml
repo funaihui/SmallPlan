@@ -15,7 +15,7 @@
         android:roundIcon="@drawable/small_plan_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".plans.PlansActivity">
+        <activity android:name=".plans.PlansActivity" android:parentActivityName=".plans.PlansActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,6 +37,13 @@
 
         <activity android:name=".addplan.AddPlanActivity" />
         <activity android:name=".BaseActivity"></activity>
+
+        <service android:name=".alarm.AlarmService" />
+        <receiver android:name=".alarm.AlarmReceiver">
+            <intent-filter >
+                <action android:name="com.wizardev.smallplanmvp.TIMER_ACTION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -45,6 +45,8 @@ public interface AddPlanContract {
 
         void setTime(int hour, int minute);
 
+        void commitAction();//提交按钮执行的动作
+
     }
 
     interface View extends BaseView<Presenter> {
@@ -80,6 +82,7 @@ public interface AddPlanContract {
         void showDateMessage(String content);
 
         void showErrorReminderText();
+
     }
 
 }
